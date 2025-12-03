@@ -4,7 +4,8 @@
  * Module dependencies.
  */
 
-var { app, connectToDatabase } = require('../src/app');
+var app = require('../src/app');
+var connectToDatabase = app.connectToDatabase;
 var debug = require('debug')('ets-server:server');
 var http = require('http');
 
