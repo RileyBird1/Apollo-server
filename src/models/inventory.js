@@ -41,10 +41,8 @@ let inventorySchema = new mongoose.Schema({
     }
 });
 
-// Pre-save hook to increment the itemId
-// If the document is new, increment the itemId
-// If the document is not new, update the dateModified
-inventorySchema.pre("save", async function (next) {
+// Pre-validate hook to increment the itemId
+inventorySchema.pre("validate", async function () {
   const doc = this;
 
   if (this.isNew) {
@@ -55,17 +53,14 @@ inventorySchema.pre("save", async function (next) {
         { new: true, upsert: true }
       );
       doc.itemId = counter.seq;
-      next();
     } catch (err) {
       console.error("Error in Counter.findByIdAndUpdate:", err);
-      next(err);
+      throw err;
     }
   } else {
     doc.dateModified = new Date();
-    next();
   }
 });
-
 
 module.exports = {
     Inventory: mongoose.model('Inventory', inventorySchema),
