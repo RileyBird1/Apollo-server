@@ -1,4 +1,5 @@
 const request = require('supertest');
+const app = require ('../../../src/app').app;
 const app = require ('../../../src/app');
 const { Inventory } = require('../../../src/models/inventory');
 
