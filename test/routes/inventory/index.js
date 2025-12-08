@@ -1,3 +1,47 @@
+describe('DELETE /api/inventory/:itemId', () => {
+  let createdItemId;
+
+  beforeEach(async () => {
+    // Create a test item to delete
+    const item = new Inventory({
+      supplierId: 2,
+      name: 'Delete Me',
+      description: 'To be deleted',
+      quantity: 5,
+      price: 10.99
+    });
+    await item.save();
+    createdItemId = item.itemId;
+  });
+
+  afterEach(async () => {
+    await Inventory.deleteMany({ name: 'Delete Me' });
+  });
+
+  // Test 1: Should delete an existing inventory item
+  it('should delete an existing inventory item', async () => {
+    const res = await request(app)
+      .delete(`/api/inventory/${createdItemId}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body.message).toBe('Item deleted');
+    expect(res.body.item.name).toBe('Delete Me');
+  });
+
+  // Test 2: Should return 404 if item does not exist
+  it('should return 404 if item does not exist', async () => {
+    const res = await request(app)
+      .delete(`/api/inventory/999999`);
+    expect(res.statusCode).toBe(404);
+    expect(res.body.error || res.body.message).toContain('not found');
+  });
+
+  // Test 3: Should handle invalid itemId gracefully
+  it('should handle invalid itemId gracefully', async () => {
+    const res = await request(app)
+      .delete(`/api/inventory/invalid-id`);
+    expect(res.statusCode).toBe(400);
+  });
+});
 const request = require('supertest');
 const app = require('../../../src/app').app;
 const { Inventory } = require('../../../src/models/inventory');

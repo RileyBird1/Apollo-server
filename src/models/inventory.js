@@ -62,7 +62,10 @@ inventorySchema.pre("validate", async function () {
   }
 });
 
+// Prevent model overwrite in dev/hot-reload
+const Inventory = mongoose.models.Inventory || mongoose.model('Inventory', inventorySchema);
+
 module.exports = {
-    Inventory: mongoose.model('Inventory', inventorySchema),
-    Counter: Counter
+  Inventory: Inventory,
+  Counter: Counter
 };
