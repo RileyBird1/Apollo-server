@@ -63,4 +63,5 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // Export the app and the database connection function
-module.exports = { app, connectToDatabase };
+module.exports = app;
+app.connectToDatabase = connectToDatabase;

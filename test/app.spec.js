@@ -15,7 +15,7 @@ const { errorHandler } = require('../src/error-handler');
 describe('app.js', () => {
   // Test the CORS configuration
   it('should set CORS headers', async () => {
-    const response = await request(app.app).get('/api');
+    const response = await request(app).get('/api');
     expect(response.headers['access-control-allow-origin']).toBe('*');
     expect(response.headers['access-control-allow-methods']).toBe('GET, POST, PUT, DELETE, OPTIONS');
     expect(response.headers['access-control-allow-headers']).toBe('Origin, X-Requested-With, Content-Type, Accept');
@@ -47,7 +47,7 @@ describe('app.js', () => {
 
   // Test the 404 error handler
   it('should return 404 for undefined routes', async () => {
-    const response = await request(app.app).get('/undefined-route');
+    const response = await request(app).get('/undefined-route');
     expect(response.status).toBe(404);
     expect(response.body).toEqual(expect.objectContaining({
       type: 'error',

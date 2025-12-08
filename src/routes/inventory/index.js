@@ -3,6 +3,8 @@ const Ajv = require('ajv');
 const createError = require('http-errors');
 const { Inventory } = require('../../models/inventory');
 const router = express.Router();
+const { updateInventorySchema } = require('../../models/inventory');
+const validateUpdateInventory = new Ajv().compile(updateInventorySchema);
 
 /**
  * DELETE /:itemId - Delete an inventory item by itemId
@@ -38,6 +40,41 @@ router.get('/:itemId', async (req, res, next) => {
   }
 });
 // ...existing code...
+
+/**
+  * GET /:itemId - Get inventory item by itemId
+  * This endpoint retrieves an inventory item based on the provided itemId parameter.
+  * If the item is found, it returns the item details in JSON format.
+  * If the item is not found, it responds with a 404 error.
+  * Example request: GET /api/inventory/123
+  * Response:
+  * {
+  *   "itemId": 123,
+  *   "categoryId": 2,
+  *   "supplierId": 1,
+  *   "name": "Widget",
+  *   "description": "A useful widget",
+  *   "quantity": 100,
+  *   "price": 9.99,
+  *   "dateCreated": "2023-10-01T12:00:00Z",
+  *   "dateModified": "2023-10-01T12:00:00Z"
+  * }
+  */
+router.get('/:itemId', async (req, res, next) => {
+    try{
+        const inventoryItem = await Inventory.findOne({ itemId: Number(req.params.itemId) });
+
+        if(!inventoryItem){
+            return next(createError(404, 'Inventory item not found'));
+        }
+
+        console.log('Result: ', inventoryItem);
+        res.json(inventoryItem);
+    }catch(err){
+        console.error(`Error while getting inventory: ${err}`);
+        next(err);
+    }
+});
 
 // routes...
 router.get('/', (req, res) => res.send("inventory ok"));
@@ -75,5 +112,46 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+/*
+  * PATCH /:itemId - Update an existing inventory item
+  * This endpoint updates an inventory item based on the provided itemId parameter.
+  * Example request: PATCH /api/inventory/123
+  * Request body: { 
+  *   "name": "Updated Widget", 
+  *   "quantity": 150 
+  * }
+  * Response: { "message": "Inventory item updated successfully" }
+  * If the item is not found, it responds with a 404 error. 
+  * If the request body fails validation, it responds with a 400 error.
+  */ 
+router.patch('/:itemId', async(req, res, next) => {
+  try{
+    const inventoryItem = await Inventory.findOne({ itemId: Number(req.params.itemId) });
+    const valid = validateUpdateInventory(req.body);
+
+    if(!valid){
+      return next(createError(400, 'Must not have fewer than 3 characters.'));
+    }
+    
+    inventoryItem.set({
+      name: req.body.name,
+      description: req.body.description,
+      quantity: req.body.quantity,
+      price: req.body.price
+    });
+
+    await inventoryItem.save();
+
+    res.send({
+      message: 'Inventory updated item successfully!',
+      itemId: inventoryItem.itemId
+    });
+  }catch(err){
+    console.error(`Error while updating inventory: ${err}`);
+    next(err);
+  }
+});
+
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require ('../../../src/app').app;
+const app = require ('../../../src/app');
 const { Inventory } = require('../../../src/models/inventory');
 
 jest.mock('../../../src/models/inventory'); // Mock the Inventory model
@@ -44,6 +45,35 @@ describe('Inventory API', ()=> {
                     message: 'Inventory item not found'
                 })
             )
+        });
+    });
+    describe('PATCH/api/inventory/:itemId', ()=> {
+        it('should update a garden successfully', async () => {
+            Inventory.findOne.mockResolvedValue({
+                set: jest.fn(),
+                save: jest.fn().mockResolvedValue({ itemId: 1 })
+            }) // Mock the findOne and save methods
+
+            const response = await request(app).patch('/api/inventory/1').send({
+                name: 'Updated Inventory Item',
+                description: 'An updated description for the inventory item',
+                quantity: 2,
+                price: 30.00
+            });
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe('Inventory updated item successfully!');
+        });
+        
+        it('should return validation errors for invalid data', async() =>{
+            const response = await request(app).patch('/api/inventory/1').send({
+                name: 'UG',
+                description:'',
+                quantity: 1,
+                price: 20.00
+            });
+
+            expect(response.status).toBe(400);
+            expect(response.body.message).toContain('Must not have fewer than 3 characters.');
         });
     });
 });
