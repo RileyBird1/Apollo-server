@@ -46,7 +46,11 @@ describe('Inventory API', ()=> {
             )
         });
     });
+
+
+    // Test suite for PATCH /api/inventory/:itemId
     describe('PATCH/api/inventory/:itemId', ()=> {
+        // Test 1: when update is successful
         it('should update a garden successfully', async () => {
             Inventory.findOne.mockResolvedValue({
                 set: jest.fn(),
@@ -60,9 +64,10 @@ describe('Inventory API', ()=> {
                 price: 30.00
             });
             expect(response.status).toBe(200);
-            expect(response.body.message).toBe('Inventory updated item successfully!');
+            expect(response.body.message).toBe('Inventory item updated successfully!');
         });
         
+        // Test 2: invalid input data
         it('should return validation errors for invalid data', async() =>{
             const response = await request(app).patch('/api/inventory/1').send({
                 name: 'UG',
@@ -73,6 +78,20 @@ describe('Inventory API', ()=> {
 
             expect(response.status).toBe(400);
             expect(response.body.message).toContain('Must not have fewer than 3 characters.');
+        });
+
+        // Test 3: test for error handling
+        it('should handle errors during update', async ()=> {
+            Inventory.findOne.mockRejectedValue(new Error('Database error')); // Mock an error
+
+            const response = await request(app).patch('/api/inventory/1').send({
+                name: 'Updated Inventory Item',
+                description: 'An updated description for the inventory item',
+                quantity: 2,
+                price: 30.00
+            });
+
+            expect(response.status).toBe(500);
         });
     });
 });

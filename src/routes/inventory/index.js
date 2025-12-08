@@ -97,9 +97,11 @@ router.patch('/:itemId', async(req, res, next) => {
     const inventoryItem = await Inventory.findOne({ itemId: Number(req.params.itemId) });
     const valid = validateUpdateInventory(req.body);
 
+    
     if(!valid){
       return next(createError(400, 'Must not have fewer than 3 characters.'));
     }
+    
     
     inventoryItem.set({
       name: req.body.name,
@@ -111,9 +113,8 @@ router.patch('/:itemId', async(req, res, next) => {
     await inventoryItem.save();
 
     res.send({
-      message: 'Inventory updated item successfully!',
-      itemId: inventoryItem.itemId
-    });
+      message: 'Inventory item updated successfully!'
+    })
   }catch(err){
     console.error(`Error while updating inventory: ${err}`);
     next(err);
