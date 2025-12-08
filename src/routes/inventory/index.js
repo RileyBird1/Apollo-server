@@ -2,6 +2,8 @@ const express = require('express');
 const Ajv = require('ajv');
 const createError = require('http-errors');
 const router = express.Router();
+const { updateInventorySchema } = require('../../models/inventory');
+const validateUpdateInventory = new Ajv().compile(updateInventorySchema);
 
 // Import the Inventory model
 const { Inventory } = require('../../models/inventory');
@@ -15,6 +17,7 @@ const { Inventory } = require('../../models/inventory');
   * Response:
   * {
   *   "itemId": 123,
+  *   "categoryId": 2,
   *   "supplierId": 1,
   *   "name": "Widget",
   *   "description": "A useful widget",
@@ -76,5 +79,46 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+/*
+  * PATCH /:itemId - Update an existing inventory item
+  * This endpoint updates an inventory item based on the provided itemId parameter.
+  * Example request: PATCH /api/inventory/123
+  * Request body: { 
+  *   "name": "Updated Widget", 
+  *   "quantity": 150 
+  * }
+  * Response: { "message": "Inventory item updated successfully" }
+  * If the item is not found, it responds with a 404 error. 
+  * If the request body fails validation, it responds with a 400 error.
+  */ 
+router.patch('/:itemId', async(req, res, next) => {
+  try{
+    const inventoryItem = await Inventory.findOne({ itemId: Number(req.params.itemId) });
+    const valid = validateUpdateInventory(req.body);
+
+    if(!valid){
+      return next(createError(400, 'Must not have fewer than 3 characters.'));
+    }
+    
+    inventoryItem.set({
+      name: req.body.name,
+      description: req.body.description,
+      quantity: req.body.quantity,
+      price: req.body.price
+    });
+
+    await inventoryItem.save();
+
+    res.send({
+      message: 'Inventory updated item successfully!',
+      itemId: inventoryItem.itemId
+    });
+  }catch(err){
+    console.error(`Error while updating inventory: ${err}`);
+    next(err);
+  }
+});
+
 
 module.exports = router;

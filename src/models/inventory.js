@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const category = require('./category');
 const Schema = mongoose.Schema;
 
 // Define the counter schema
@@ -15,6 +16,10 @@ let inventorySchema = new mongoose.Schema({
     itemId: {
         type: Number,
         required: [true, 'Item ID is required']
+    },
+    categoryId: {
+        type: Number,
+        required: [true, 'Category ID is required']
     },
     supplierId: {
         type: Number,
@@ -62,7 +67,22 @@ inventorySchema.pre("validate", async function () {
   }
 });
 
+const updateInventorySchema = {
+  type: "object",
+  properties: {
+    categoryId: { type: "number" },
+    supplierId: { type: "number" },
+    name: { type: "string", minLength: 3, maxLength: 100 },
+    description: { type: "string", maxLength: 500 },
+    quantity: { type: "number", minimum: 0 },
+    price: { type: "number", minimum: 0 }
+  },
+  required: ['name', 'description', 'quantity', 'price'],
+  additionalProperties: false
+}
+
 module.exports = {
     Inventory: mongoose.model('Inventory', inventorySchema),
-    Counter: Counter
+    Counter: Counter,
+    updateInventorySchema: updateInventorySchema
 };
