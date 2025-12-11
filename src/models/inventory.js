@@ -11,15 +11,17 @@ let counterSchema = new Schema({
 // Create a counter model
 const Counter = mongoose.model('Counter', counterSchema);
 
-// Define the supplier schema
+// Define the inventory schema
 let inventorySchema = new mongoose.Schema({
     itemId: {
         type: Number,
-        required: [true, 'Item ID is required']
+        required: [true, 'Item ID is required'],
+        unique: true,
+        index: true
     },
     categoryId: {
         type: Number,
-        required: [true, 'Category ID is required']
+        
     },
     supplierId: {
         type: Number,

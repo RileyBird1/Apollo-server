@@ -77,7 +77,15 @@ router.get('/:itemId', async (req, res, next) => {
 });
 
 // routes...
-router.get('/', (req, res) => res.send("inventory ok"));
+// GET /api/inventory - Return all inventory items
+router.get('/', async (req, res) => {
+  try {
+    const items = await Inventory.find();
+    res.status(200).json(items);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 /**
  * POST / - Create a new inventory item
