@@ -50,6 +50,7 @@ describe('POST /api/supplier', () => {
     expect(res.body.error).toContain('required');
   });
 });
+<<<<<<< HEAD
 
 describe('GET /api/supplier', () => {
   beforeEach(async () => {
@@ -86,3 +87,5 @@ describe('GET /api/supplier', () => {
     Supplier.find = origFind;
   });
 });
+=======
+>>>>>>> 32f666727c61d1d0dbe1fa93b14fd52786b50894
