@@ -11,6 +11,7 @@ beforeAll(() => {
 });
 
 describe('Supplier API', () => {
+
     // Test suite for GET /api/supplier/:supplierId
     describe("GET /api/supplier/supplierId", () => {
       // TEST 1 — Successfully return a supplier
@@ -51,6 +52,7 @@ describe('Supplier API', () => {
       });
     });
 
+    // Test suite for POST /api/supplier
     describe("POST /api/supplier", () => {
       // Clean up test data after each test
       afterEach(async () => {
@@ -81,46 +83,57 @@ describe('Supplier API', () => {
         expect(res.statusCode).toBe(400);
         expect(res.body.error).toContain("required");
       });
-    expect(res.statusCode).toBe(400);
-    expect(res.body.error).toContain('required');
-  });
-});
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toContain("required");
+    });
 
-describe('GET /api/supplier', () => {
-  beforeEach(async () => {
-    await Supplier.deleteMany({});
-  });
+    // Test suite for GET /api/supplier
+    describe("GET /api/supplier", () => {
+      beforeEach(async () => {
+        await Supplier.deleteMany({});
+      });
 
-  it('should return all suppliers', async () => {
-    await Supplier.create([
-      { supplierId: 1, supplierName: 'Supplier A', contactInformation: 'a@email.com', address: '123 Main St' },
-      { supplierId: 2, supplierName: 'Supplier B', contactInformation: 'b@email.com', address: '456 Oak Ave' }
-    ]);
-    const res = await request(app).get('/api/supplier');
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBe(2);
-    expect(res.body[0].supplierName).toBe('Supplier A');
-    expect(res.body[1].supplierName).toBe('Supplier B');
-  });
+      it("should return all suppliers", async () => {
+        await Supplier.create([
+          {
+            supplierId: 1,
+            supplierName: "Supplier A",
+            contactInformation: "a@email.com",
+            address: "123 Main St",
+          },
+          {
+            supplierId: 2,
+            supplierName: "Supplier B",
+            contactInformation: "b@email.com",
+            address: "456 Oak Ave",
+          },
+        ]);
+        const res = await request(app).get("/api/supplier");
+        expect(res.statusCode).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBe(2);
+        expect(res.body[0].supplierName).toBe("Supplier A");
+        expect(res.body[1].supplierName).toBe("Supplier B");
+      });
 
-  it('should return empty array if no suppliers', async () => {
-    const res = await request(app).get('/api/supplier');
-    expect(res.statusCode).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBe(0);
-  });
+      it("should return empty array if no suppliers", async () => {
+        const res = await request(app).get("/api/supplier");
+        expect(res.statusCode).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBe(0);
+      });
 
-  it('should handle server error', async () => {
-    // Temporarily stub Supplier.find to throw
-    const origFind = Supplier.find;
-    Supplier.find = () => { throw new Error('DB error'); };
-    const res = await request(app).get('/api/supplier');
-    expect(res.statusCode).toBe(500);
-    expect(res.body.error).toBeDefined();
-    Supplier.find = origFind;
-  });
-});
+      it("should handle server error", async () => {
+        // Temporarily stub Supplier.find to throw
+        const origFind = Supplier.find;
+        Supplier.find = () => {
+          throw new Error("DB error");
+        };
+        const res = await request(app).get("/api/supplier");
+        expect(res.statusCode).toBe(500);
+        expect(res.body.error).toBeDefined();
+        Supplier.find = origFind;
+      });
 
       // Test 3: Should fail if supplierId is missing
       it("should fail if supplierId is missing", async () => {
@@ -134,4 +147,9 @@ describe('GET /api/supplier', () => {
       });
     });
 });
+
+
+
+      
+  
 
