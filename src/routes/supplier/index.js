@@ -36,7 +36,6 @@ router.post('/', async (req, res) => {
 	}
 });
 
-<<<<<<< HEAD
 
 
 // DELETE /:supplierId - If multiple suppliers with the same supplierId exist, return them for selection. If _id is provided, delete by _id.
@@ -70,6 +69,4 @@ router.delete('/:supplierId', async (req, res) => {
 	}
 });
 
-=======
->>>>>>> 32f666727c61d1d0dbe1fa93b14fd52786b50894
 module.exports = router;
