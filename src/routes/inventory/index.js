@@ -24,22 +24,6 @@ router.delete('/:itemId', async (req, res, next) => {
     res.status(400).json({ error: err.message });
   }
 });
-// ...existing code...
-
-router.get('/:itemId', async (req, res, next) => {
-  try {
-    const inventoryItem = await Inventory.findOne({ itemId: Number(req.params.itemId) });
-    if (!inventoryItem) {
-      return res.status(404).json({ message: 'Inventory item not found' });
-    }
-    console.log('Result: ', inventoryItem);
-    res.status(200).json(inventoryItem);
-  } catch (err) {
-    console.error(`Error while getting inventory: ${err}`);
-    res.status(500).json({ message: err.message });
-  }
-});
-// ...existing code...
 
 /**
   * GET /:itemId - Get inventory item by itemId
@@ -76,22 +60,14 @@ router.get('/:itemId', async (req, res, next) => {
     }
 });
 
-// routes...
-// GET /api/inventory - Return all inventory items
-router.get('/', async (req, res) => {
-  try {
-    const items = await Inventory.find();
-    res.status(200).json(items);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
 /**
  * POST / - Create a new inventory item
  * This endpoint receives item data and creates a new inventory record in the database.
  * Example request body:
  * {
+ *   "itemId": 123,
+ *   "categoryId": 2,
  *   "supplierId": 1,
  *   "name": "Widget",
  *   "description": "A useful widget",
@@ -138,9 +114,11 @@ router.patch('/:itemId', async(req, res, next) => {
     const inventoryItem = await Inventory.findOne({ itemId: Number(req.params.itemId) });
     const valid = validateUpdateInventory(req.body);
 
+    
     if(!valid){
       return next(createError(400, 'Must not have fewer than 3 characters.'));
     }
+    
     
     inventoryItem.set({
       name: req.body.name,
@@ -152,14 +130,52 @@ router.patch('/:itemId', async(req, res, next) => {
     await inventoryItem.save();
 
     res.send({
-      message: 'Inventory updated item successfully!',
-      itemId: inventoryItem.itemId
-    });
+      message: 'Inventory item updated successfully!'
+    })
   }catch(err){
     console.error(`Error while updating inventory: ${err}`);
     next(err);
   }
 });
+
+
+/** 
+ * GET / - Get all inventory items
+ * This endpoint retrieves all inventory items from the database and returns them in JSON format.
+ * Example request: GET /api/inventory/
+ * Response:
+ * [
+ *   {
+ *     "itemId": 123,
+ *     "categoryId": 2,
+ *     "supplierId": 1,
+ *     "name": "Widget",
+ *     "description": "A useful widget",
+ *     "quantity": 100,
+ *     "price": 9.99,
+ *     "dateCreated": "2023-10-01T12:00:00Z",
+ *     "dateModified": "2023-10-01T12:00:00Z"
+ *   },
+ *   ...
+ * ]
+*/
+router.get('/', async (req, res, next) => {
+    try{
+        const inventoryItems = await Inventory.find({});
+
+        // If no items exist → return 404
+        if (!inventoryItems || inventoryItems.length === 0) {
+            return res.status(404).json({ message: 'No inventory items found' });
+        }
+        
+        console.log('Result: ', inventoryItems);
+        res.json(inventoryItems);
+    }catch(err){
+        console.error(`Error while getting inventories: ${err}`);
+        return res.status(500).json({ error: 'Database error' });
+    }
+});
+
 
 
 module.exports = router;
