@@ -110,7 +110,7 @@ describe('Supplier API', () => {
       });
 
       it("should return all suppliers", async () => {
-        Supplier.find.mockResolvedValue([
+        await Supplier.create([
           {
             supplierId: 1,
             supplierName: "Supplier A",
