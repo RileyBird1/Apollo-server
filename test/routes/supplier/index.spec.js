@@ -61,6 +61,24 @@ describe('Supplier API', () => {
 
       // Test 1: Should create supplier with valid data
       it("should create supplier with valid data", async () => {
+        const mockSupplier = {
+          supplierId: 123,
+          supplierName: "Test Supplier",
+          contactInformation: "test@example.com",
+          address: "123 Test St.",
+          dateCreated: new Date(),
+          dateModified: new Date(),
+          save: jest.fn().mockResolvedValue({
+            supplierId: 123,
+            supplierName: "Test Supplier",
+            contactInformation: "test@example.com",
+            address: "123 Test St.",
+            dateCreated: new Date(),
+            dateModified: new Date()
+          })
+        };
+        const SupplierMock = jest.fn(() => mockSupplier);
+        Supplier.mockImplementation(SupplierMock);
         const res = await request(app).post("/api/supplier").send({
           supplierId: 123,
           supplierName: "Test Supplier",
@@ -83,8 +101,6 @@ describe('Supplier API', () => {
         expect(res.statusCode).toBe(400);
         expect(res.body.error).toContain("required");
       });
-      expect(res.statusCode).toBe(400);
-      expect(res.body.error).toContain("required");
     });
 
     // Test suite for GET /api/supplier
@@ -117,6 +133,7 @@ describe('Supplier API', () => {
       });
 
       it("should return empty array if no suppliers", async () => {
+        Supplier.find.mockResolvedValue([]);
         const res = await request(app).get("/api/supplier");
         expect(res.statusCode).toBe(200);
         expect(Array.isArray(res.body)).toBe(true);
