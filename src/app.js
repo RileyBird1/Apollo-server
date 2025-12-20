@@ -23,13 +23,14 @@ const cors = require('cors');
 let app = express();
 
 // Database connection logic (exported to allow testing)
-//const connectionString = 'mongodb+srv://apollo:s3cretApollo@cluster0.4auoir7.mongodb.net/?appName=Cluster0';
+const connectionString = 'mongodb+srv://apollo:s3cretApollo@cluster0.4auoir7.mongodb.net/?appName=Cluster0';
 
-//const dbName = 'Apollo'; // Database name
+const dbName = 'Apollo'; // Database name
 
+/*
 const connectionString = process.env.MONGO_URI;
 const dbName = process.env.DB_NAME || 'Apollo';
-
+*/
 
 // Function to connect to the database
 async function connectToDatabase(){
@@ -44,14 +45,15 @@ async function connectToDatabase(){
 }
 
 // CORS configuration
-/*
+
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); // This allows all origins
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS'); // Allowed request methods
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); // Allowed headers
   next();
 });
-*/
+
+/*
 app.use(cors({
   origin: [
     'http://localhost:4200',
@@ -61,7 +63,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
-
+*/
 // Handle preflight requests
 app.options('*', (req, res) => {
   res.sendStatus(200);
