@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const category = require('./category');
 const Schema = mongoose.Schema;
 
 // Define the counter schema

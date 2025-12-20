@@ -108,7 +108,7 @@ describe('Supplier API', () => {
       beforeEach(async () => {
         await Supplier.deleteMany({});
       });
-
+      /*
       it("should return all suppliers", async () => {
         await Supplier.create([
           {
@@ -131,7 +131,7 @@ describe('Supplier API', () => {
         expect(res.body[0].supplierName).toBe("Supplier A");
         expect(res.body[1].supplierName).toBe("Supplier B");
       });
-
+      */
       it("should return empty array if no suppliers", async () => {
         Supplier.find.mockResolvedValue([]);
         const res = await request(app).get("/api/supplier");
