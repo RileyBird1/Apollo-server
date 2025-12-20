@@ -23,9 +23,9 @@ const cors = require('cors');
 let app = express();
 
 // Database connection logic (exported to allow testing)
-const connectionString = 'mongodb+srv://apollo:s3cretApollo@cluster0.4auoir7.mongodb.net/?appName=Cluster0';
+const connectionString = process.env.MONGO_URI || 'mongodb+srv://apollo:s3cretApollo@cluster0.4auoir7.mongodb.net/?appName=Cluster0';
 
-const dbName = 'Apollo'; // Database name
+const dbName = process.env.DB_NAME || 'Apollo'; // Database name
 
 /*
 const connectionString = process.env.MONGO_URI;
